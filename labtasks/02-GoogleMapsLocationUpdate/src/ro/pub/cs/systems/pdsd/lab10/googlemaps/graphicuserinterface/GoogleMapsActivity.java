@@ -19,6 +19,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -269,6 +270,22 @@ public class GoogleMapsActivity extends Activity implements ConnectionCallbacks,
 		// update the locationUpdatesStatusButton text & color
 		// navigate to current position (lastLocation)
 		// disable the latitudeEditText, longitudeEditText, navigateToLocationButton widgets
+		
+	    LocationServices.FusedLocationApi.requestLocationUpdates(
+	            googleApiClient,
+	            locationRequest,
+	            this
+	    );
+		locationUpdatesStatus = true;
+		googleMap.setMyLocationEnabled(true);
+		locationUpdatesStatusButton.setText(getResources().getString(R.string.stop_location_updates));
+		locationUpdatesStatusButton.setBackground(getResources().getDrawable(R.color.green));
+		if (lastLocation != null) {
+			navigateToLocation(lastLocation);
+		}
+		latitudeEditText.setEnabled(false);
+		longitudeEditText.setEnabled(false);
+		navigateToLocationButton.setEnabled(false);
 
 	}
 	
@@ -280,8 +297,22 @@ public class GoogleMapsActivity extends Activity implements ConnectionCallbacks,
 		// disable the current location on Google Map
 		// update the locationUpdatesStatusButton text & color
 		// enable the latitudeEditText, longitudeEditText, navigateToLocationButton widgets	and reset their content
-
+		
+	    LocationServices.FusedLocationApi.removeLocationUpdates(
+	            googleApiClient,
+	            this
+	    );
+		locationUpdatesStatus = false;
+		googleMap.setMyLocationEnabled(false);
+		locationUpdatesStatusButton.setText(getResources().getString(R.string.start_location_updates));
+		locationUpdatesStatusButton.setBackground(getResources().getDrawable(R.color.red));
+		latitudeEditText.setEnabled(true);
+		longitudeEditText.setEnabled(true);
+		navigateToLocationButton.setEnabled(true);
+		latitudeEditText.setText(new String());
+		longitudeEditText.setText(new String());
 	}
+		
 	
 	@Override
     public void onLocationChanged(Location location) {
